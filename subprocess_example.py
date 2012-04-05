@@ -2,9 +2,8 @@
 
 """ subprocess example
 it calls command lasting relatively long time,
-than sleeps some time to show that command was running background,
-than shows output until defined line and
-than interrupts command and show the rest of output until command ends.
+shows output and than interrupts it
+and show the rest of output until command ends.
 author: Ondrej Hejda
 date: 31.3.2012
 
@@ -22,45 +21,48 @@ import signal #interrupt signal name
 import os
 import subprocess
 
-#find out if running posix system (otherwise expecting windows)
-wok = False
-if os.name!='posix':
-	wok = True
-	print('Widle')
+#find out if running windows system
+widle = False
+if os.name=='nt':
+        widle = True
 
 #command to run
 #ping ... good example, except it differs in windows .. ugh!
-if wok:
-	cmd = ['ping','127.0.0.1','-n','10']
-else:
-	cmd = ['ping','127.0.0.1','-c','10']
-print('RUN: {} {} {} {}'.format(cmd[0],cmd[1],cmd[2],cmd[3]))
+cmd = ['ping','127.0.0.1']
+if widle:
+        cmd.append('-t')
+print('RUN:',cmd[0],cmd[1])
 
 #run it (also os dependent)
-if wok:
-	p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+if widle: # on windows
+	p = subprocess.Popen(cmd, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
 						stderr=subprocess.STDOUT,#, close_fds=True)
 						creationflags=0x8000000)# CREATE_NO_WINDOW = 0x8000000
-else:
+else: #on linux
 	p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
 						stderr=subprocess.STDOUT, close_fds=True)
 
 #setup and start interrupt timer
 def stopit():
-	if p.poll()==None:
-		if wok:
+        #print('TIMER')
+        if p.poll()==None:
+                '''if wok:
 			#as windows don't have sigint but ctrl_c_event but it doesn't work same as keystroke .. ugh! again
-			p.send_signal(signal.CTRL_C_EVENT)
-		else:
+                        #p.send_signal(signal.CTRL_C_EVENT)
+                        #p.send_signal(signal.CTRL_BREAK_EVENT)
+                        #p.kill()
+                        p.terminate()
+                else:
 			#sigint .. works as ctrl-c keystroke
-			p.send_signal(signal.SIGINT)
-	print('INTERRUPT')
-t = Timer(5,stopit)
+                        p.send_signal(signal.SIGINT)'''
+                p.terminate()
+                #print('INTERRUPT')
+t = Timer(4.75,stopit)
 t.start()
 
-#sleep a while
+'''#sleep a while
 print('sleep 2s (to show its running on background)')
-sleep(2)
+sleep(2)'''
 print('BEGIN:')
 
 #read output and show it
