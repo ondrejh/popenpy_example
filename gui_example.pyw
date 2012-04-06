@@ -6,6 +6,10 @@ import signal #interrupt signal name
 import subprocess
 import os
 
+def myread(what):
+	what.flush()
+	return what.readline()
+
 #command thread
 class thrCmd(Thread):
 	def __init__ (self,cmd,out):
@@ -15,24 +19,28 @@ class thrCmd(Thread):
 	def run(self):
 		if os.name=='nt':
 			self.p = subprocess.Popen(self.cmd,
-						  shell=False,
+						  #shell=False,
 						  stdin=subprocess.PIPE,
 						  stdout=subprocess.PIPE,
 						  stderr=subprocess.STDOUT,
 						  #close_fds=True,
+						  bufsize=0,
 						  creationflags=0x8000000)# CREATE_NO_WINDOW = 0x8000000
 		else:
 			self.p = subprocess.Popen(self.cmd,
-						  sheel=False,
+						  #shell=False,
 						  stdin=subprocess.PIPE,
 						  stdout=subprocess.PIPE,
 						  stderr=subprocess.STDOUT,
-						  close_fds=True)#,
+						  bufsize=0)#,
+						  #close_fds=True)#,
 						  #creationflags=0x8000000)# CREATE_NO_WINDOW = 0x8000000
 						  
 		#read output and show it
-		for line in self.p.stdout:
-			self.out('{}\n'.format(line.decode('ascii').strip()))
+		while self.p.poll()==None:
+			self.out(self.p.stdout.read(1))
+		#for line in myread(self.p.stdout):
+		#	self.out('{}\n'.format(line.decode('ascii').strip()))
 	def join(self):
 		try:
 			self.p.terminate()
@@ -74,12 +82,14 @@ class runapp_gui(Frame):
 		if os.name == 'nt':
 			self.strCommand.set('ping 127.0.0.1 -t')
 		else:
-			self.strCommand.set('ping 127.0.0.1')
+			self.strCommand.set('./testapp/testapp.run')
+			#self.strCommand.set('ping 127.0.0.1')
 		#text output
 		self.txtOutput = Text(background='black',
-                                      foreground='green',
-                                      font='TkFixedFont')
+				      foreground='green',
+				      font='Courier 10')
 		self.txtOutput.pack(fill=BOTH,expand=1)
+		print(self.txtOutput.config('font'))
 		
 	def btnRunClick(self):
 		self.printOut('\n\nRUN: {}\n'.format(self.strCommand.get()))
