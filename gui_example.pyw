@@ -38,7 +38,10 @@ class thrCmd(Thread):
 						  
 		#read output and show it
 		while self.p.poll()==None:
-			self.out(self.p.stdout.read(1))
+			try:
+				self.out(self.p.stdout.read(1))
+			except:
+				pass
 		#for line in myread(self.p.stdout):
 		#	self.out('{}\n'.format(line.decode('ascii').strip()))
 	def join(self):
@@ -53,8 +56,8 @@ class thrCmd(Thread):
 			self.p.wait()
 			return self.p.returncode
 		except:
-			None
-
+			return None
+			
 #application class
 class runapp_gui(Frame):
 	''' gui for executing terminal application '''
@@ -89,7 +92,7 @@ class runapp_gui(Frame):
 				      foreground='green',
 				      font='Courier 10')
 		self.txtOutput.pack(fill=BOTH,expand=1)
-		print(self.txtOutput.config('font'))
+		#print(self.txtOutput.config('font'))
 		
 	def btnRunClick(self):
 		self.printOut('\n\nRUN: {}\n'.format(self.strCommand.get()))

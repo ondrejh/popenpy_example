@@ -8,8 +8,7 @@
 		<Build>
 			<Target title="Release">
 				<Option output="testapp.run" prefix_auto="1" extension_auto="0" />
-				<Option working_dir=".." />
-				<Option object_output="/home/ondrej/Projekty/popenpy_example/testapp//.objs" />
+				<Option object_output="." />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
