@@ -42,8 +42,11 @@ class thrCmd(Thread):
 				self.out(self.p.stdout.read(1))
 			except:
 				pass
-		#for line in myread(self.p.stdout):
-		#	self.out('{}\n'.format(line.decode('ascii').strip()))
+                #for line in myread(self.p.stdout):
+		#	try:
+		#		self.out('{}\n'.format(line.decode('ascii').strip()))
+		#	except:
+		#		pass
 	def join(self):
 		try:
 			self.p.terminate()
@@ -83,7 +86,8 @@ class runapp_gui(Frame):
 		self.entCmd = Entry(self.frmEntry,textvariable=self.strCommand)
 		self.entCmd.pack(side=LEFT)
 		if os.name == 'nt':
-			self.strCommand.set('ping 127.0.0.1 -t')
+			self.strCommand.set('testapp/testapp.exe')
+			#self.strCommand.set('ping 127.0.0.1 -t')
 		else:
 			self.strCommand.set('./testapp/testapp.run')
 			#self.strCommand.set('ping 127.0.0.1')
